@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Findme</string>
+    <string name="app_name">Find Me</string>
+    <string name="settings">Settings</string>
+    <string name="contacts">Contacts</string>
 </resources>
