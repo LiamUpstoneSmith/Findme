@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#FFE40808" />
+        android:shape="rectangle">
+    <solid android:color="#FF0000" />
     <corners
-        android:radius="@dimen/send_button_radius"
-        />
+        android:topLeftRadius="@dimen/send_button_radius"
+        android:topRightRadius="@dimen/send_button_radius"
+        android:bottomRightRadius="@dimen/send_button_radius"
+        android:bottomLeftRadius="@dimen/send_button_radius" />
 </shape>

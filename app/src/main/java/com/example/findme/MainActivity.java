@@ -15,12 +15,11 @@ import android.view.View;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityCompat;
 import android.location.LocationManager;
 import android.location.Location;
 import android.location.Geocoder; // For more user-friendly location description (optional)
 import android.telephony.SmsManager;
-import android.widget.ImageButton;
+import android.widget.Button;
 
 // for pop up window
 import android.app.AlertDialog;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_SMS_CODE = 2;
 
     private LocationManager locationManager;
-    private ImageButton sendLocationButton;
+    private Button sendLocationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         sendLocationButton.setOnClickListener(new View.OnClickListener() {
 
-            ImageButton myButton = findViewById(R.id.send_location_button);
+            Button myButton = findViewById(R.id.send_location_button);
 
             @Override
             public void onClick(View v) {
