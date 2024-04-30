@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -17,13 +18,13 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import android.location.LocationManager;
 import android.location.Location;
-import android.location.Geocoder; // For more user-friendly location description (optional)
 import android.telephony.SmsManager;
 import android.widget.Button;
 
 // for pop up window
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_SMS_CODE = 2;
 
     private LocationManager locationManager;
+    private final int LOCATION_PERMISSION_REQUEST_CODE = 1; // Request code for permission
     private Button sendLocationButton;
+
+    private String PHONE_NUMBER = "07380192907";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,18 +49,30 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        sendLocationButton = findViewById(R.id.send_location_button); // Replace with your button ID
 
-        // Request location permission
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+        sendLocationButton.setEnabled(false);
+        if (checkPermission(Manifest.permission.SEND_SMS)) {
+            sendLocationButton.setEnabled(true);
+        }else{
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_REQUEST_CODE);
+        }
 
-        // Request SMS permission (newer versions of Android require this)
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, REQUEST_SMS_CODE);
+
+
+
+
+//
+//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        sendLocationButton = findViewById(R.id.send_location_button);
+
+//        // Request location permission
+//        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+//
+//        // Request SMS permission (newer versions of Android require this)
+//        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, REQUEST_SMS_CODE);
 
         sendLocationButton.setOnClickListener(new View.OnClickListener() {
-
-            Button myButton = findViewById(R.id.send_location_button);
 
             @Override
             public void onClick(View v) {
@@ -82,12 +98,13 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle("Send Location");  // Set title
                 builder.setMessage("Do you want to send an SOS Location Alert?");  // Set message
 
-                // Add buttons (optional)
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Handle OK button click
-                        sendLocationSMS("07864276696"); // Replace with recipient phone number
+                        //sendLocationSMS(PHONE_NUMBER); // Replace with recipient phone number
+                        //getLocationAndSendMessage();
+                        onSend();
                     }
                 });
                 return builder;
@@ -95,69 +112,95 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_LOCATION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, proceed with location access
-                } else {
-                    // Handle permission denied case
-                }
-                break;
-            case REQUEST_SMS_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, proceed with SMS sending
-                } else {
-                    // Handle permission denied case
-                }
-                break;
-        }
-    }
+//
+//    private void sendLocationSMS(String phoneNumber) {
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // Handle permission denied case
+//            return;
+//        }
+//
+//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        if (location == null) {
+//            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        }
+//
+//        if (location != null) {
+//            double latitude = location.getLatitude();
+//            double longitude = location.getLongitude();
+//            String message = "My current location is: \n(" + latitude + ", " + longitude + ")";
+//
+//            // Check SMS permission again
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+//                // Handle permission denied case
+//                return;
+//            }
+//
+//            SmsManager smsManager = SmsManager.getDefault();
+//            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+//        } else {
+//            // Handle location unavailable case
+//        }
+//
+//    }
 
-    private void sendLocationSMS(String phoneNumber) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Handle permission denied case
-            return;
-        }
-
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (location == null) {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-
-        if (location != null) {
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            String message = "My current location is: \n(" + latitude + ", " + longitude + ")";
-
-            // Check SMS permission again
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                // Handle permission denied case
-                return;
-            }
-
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
-        } else {
-            // Handle location unavailable case
-        }
-
-    }
-
-    public void launchSettings(View v){
+    public void launchSettings(View v) {
 
         //launch new activity
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
 
-    public void launchContacts(View v){
+    public void launchContacts(View v) {
 
         //launch new activity
         Intent i = new Intent(this, ContactsActivity.class);
         startActivity(i);
     }
 
+//    private void getLocationAndSendMessage() {
+//        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // Request permissions here
+//            return;
+//        }
+//
+//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//        if (location != null) {
+//            double latitude = location.getLatitude();
+//            double longitude = location.getLongitude();
+//            sendMessage(latitude, longitude);
+//        }
+//    }
+//
+//    private void sendMessage(double latitude, double longitude) {
+//        String mapUrl = "http://maps.google.com?q=" + latitude + "," + longitude;
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage(PHONE_NUMBER, null, mapUrl, null, null);
+//    }
+
+
+
+
+
+    final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
+
+
+    public void onSend(){
+        String message = "Hello there";
+
+        if(checkPermission(Manifest.permission.SEND_SMS)){
+            SmsManager smsmanager = SmsManager.getDefault();
+            smsmanager.sendTextMessage(PHONE_NUMBER, null, message, null, null);
+            Toast.makeText(this, "Message Sent!", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean checkPermission(String permission) {
+        int check = ContextCompat.checkSelfPermission(this, permission);
+        return (check == PackageManager.PERMISSION_GRANTED);
+    }
 }
