@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     String phoneNumber = "07864276696";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendSMS(String phoneNumber, double latitude, double longitude) {
 
-        String message = "I am in need of immediate assistance!" + "http://maps.google.com?q=" + latitude + "," + longitude;
+        String message = "I am in need of immediate assistance!   " + "http://maps.google.com?q=" + latitude + "," + longitude;
 
         try {
             SmsManager smsManager = SmsManager.getDefault(); // Creates smsManager object
