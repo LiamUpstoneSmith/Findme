@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     // Check for Permissions
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
             double longitude = location.getLongitude();
             sendSMS(phoneNumber, latitude, longitude);
         }
-
     }
 
     private void sendSMS(String phoneNumber, double latitude, double longitude) {
