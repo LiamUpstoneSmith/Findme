@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    String phoneNumber = "07864276696";
+    String phoneNumber = "PHONENUMBER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
